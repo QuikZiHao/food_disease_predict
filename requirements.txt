@@ -3,3 +3,5 @@ numpy
 langchain-ollama
 openpyxl
 matplotlib
+xgboost
+seaborn
