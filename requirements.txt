@@ -2,3 +2,4 @@ pandas
 numpy
 langchain-ollama
 openpyxl
+matplotlib
