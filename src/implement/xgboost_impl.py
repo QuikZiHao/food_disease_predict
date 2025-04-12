@@ -74,37 +74,49 @@ def train(city:str, X_train:np.ndarray, X_test:np.ndarray, y_train:np.ndarray, y
 def plot(city:str, model, X_train:np.ndarray, X_test:np.ndarray, y_train:np.ndarray, y_test:np.ndarray):
     plt.rcParams['font.sans-serif'] = ['SimHei']  # 使用黑体
     plt.rcParams['axes.unicode_minus'] = False  # 解决负号无法显示的问题
+
+    # 模型预测
     y_train_pred = model.predict(X_train)
     y_test_pred = model.predict(X_test)
 
-    # 真实值
+    # 转为 NumPy 数组（确保兼容）
     y_train_actual = np.array(y_train)
     y_test_actual = np.array(y_test)
-
-
-    # 真实值 & 预测值
-    y_train_actual = np.array(y_train)  # 训练集真实值
-    y_train_pred = np.array(y_train_pred)  # 训练集预测值
-    y_test_actual = np.array(y_test)  # 测试集真实值
-    y_test_pred = np.array(y_test_pred)  # 测试集预测值
-
+    y_train_pred = np.array(y_train_pred)
+    y_test_pred = np.array(y_test_pred)
 
     sampling_rate = 30
 
     plt.figure(figsize=(12, 6))
 
+    # === 画图 ===
+    plt.plot(range(0, len(y_train_actual), sampling_rate), y_train_actual[::sampling_rate],
+             label="Train Actual", color="blue", alpha=0.7, linestyle="-")
+    plt.plot(range(0, len(y_train_pred), sampling_rate), y_train_pred[::sampling_rate],
+             label="Train Predicted", color="green", alpha=0.7, linestyle="--")
 
-    plt.plot(range(0, len(y_train_actual), sampling_rate), y_train_actual[::sampling_rate], label="Train Actual", color="blue", alpha=0.7, linestyle="-")
-    plt.plot(range(0, len(y_train_pred), sampling_rate), y_train_pred[::sampling_rate], label="Train Predicted", color="green", alpha=0.7, linestyle="--")
-
-    # 测试集
     test_start_idx = len(y_train_actual)
-    plt.plot(range(test_start_idx, test_start_idx + len(y_test_actual), sampling_rate), y_test_actual[::sampling_rate], label="Test Actual", color="red", alpha=0.7, linestyle="-")
-    plt.plot(range(test_start_idx, test_start_idx + len(y_test_pred), sampling_rate), y_test_pred[::sampling_rate], label="Test Predicted", color="green", alpha=0.7, linestyle="--")
+    plt.plot(range(test_start_idx, test_start_idx + len(y_test_actual), sampling_rate), y_test_actual[::sampling_rate],
+             label="Test Actual", color="red", alpha=0.7, linestyle="-")
+    plt.plot(range(test_start_idx, test_start_idx + len(y_test_pred), sampling_rate), y_test_pred[::sampling_rate],
+             label="Test Predicted", color="green", alpha=0.7, linestyle="--")
+
+    # === 年份标签替代时间步 ===
+    total_len = len(y_train_actual) + len(y_test_actual)
+    year_labels = list(range(2014, 2023))  # 2014–2022 inclusive
+    year_step = total_len // len(year_labels)
+    tick_positions = list(range(0, total_len, year_step))
+    if len(tick_positions) > len(year_labels):
+        tick_positions = tick_positions[:len(year_labels)]
+
+    plt.xticks(tick_positions, year_labels, rotation=45)
+
     plt.legend()
-    plt.title(f"{city}Actual vs Predicted (Sampled)")
-    plt.xlabel("Time")
+    plt.title(f"{city} - Actual vs Predicted (Sampled)")
+    plt.xlabel("Year")
     plt.ylabel("Cases")
+    plt.grid(True)
+    plt.tight_layout()
     plt.show()
 
 def get_importance(model):
