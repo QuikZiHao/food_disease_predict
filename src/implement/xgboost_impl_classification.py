@@ -21,13 +21,15 @@ def solve_data(df:pd.DataFrame):
     df["确诊食源性疾病"] = df["鉴定结果大类"].apply(lambda x: 0 if x == "/" or x == None else 1)
     df.drop(columns=["鉴定结果大类"], inplace=True)
     df.drop(columns=['鉴定结论'], inplace=True)
-    df = get_bool(df,"是否复诊",true_false_bool)
-    df = get_bool(df,"是否住院",true_false_bool)
+    df.drop(columns=["是否复诊"], inplace=True)
+    df.drop(columns=["是否住院"], inplace=True)
     df = get_bool(df,"其他人是否发病",true_false_bool)
     df = get_bool(df,"患者性别",gender_bool)
     df.drop(columns=["现在住址地市"], inplace=True)
     df = get_dummies(["食品分类", "加工及包装方式", "进食场所类型"],df)
     df = clear_data(df,"发病日期", 2023)
+    df["发病月份"] = pd.to_datetime(df["发病日期"]).dt.month
+    df.drop(columns=["发病日期"], inplace=True)
     return df
 
 
